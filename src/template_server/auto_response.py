@@ -1,4 +1,4 @@
-"""Auto-Response Rule Management Module."""
+"""Auto-Response Rule Management Module (Simplified)."""
 
 import json
 import os
@@ -12,10 +12,8 @@ from pathlib import Path
 @dataclass
 class AutoResponseRule:
     """Represents an auto-response rule."""
-    friend_id: str
     trigger: str
     response: str
-    friend_name: str = ""
     match_type: str = "contains"  # exact, contains, startswith, regex
     enabled: bool = True
     id: str = field(default_factory=lambda: str(uuid.uuid4()))
@@ -45,7 +43,6 @@ class AutoResponseManager:
     def __init__(self, config_path: Optional[str] = None):
         """Initialize the manager with optional config file path."""
         if config_path is None:
-            # Default to project root directory
             config_path = os.path.join(
                 os.path.dirname(os.path.dirname(os.path.dirname(__file__))),
                 "auto_responses.json"
@@ -77,18 +74,14 @@ class AutoResponseManager:
     
     def add_rule(
         self,
-        friend_id: str,
         trigger: str,
         response: str,
-        friend_name: str = "",
         match_type: str = "contains"
     ) -> AutoResponseRule:
         """Add a new auto-response rule."""
         rule = AutoResponseRule(
-            friend_id=friend_id,
             trigger=trigger,
             response=response,
-            friend_name=friend_name,
             match_type=match_type
         )
         self.rules.append(rule)
@@ -104,16 +97,14 @@ class AutoResponseManager:
                 return True
         return False
     
-    def get_rules(self, friend_id: Optional[str] = None) -> list[AutoResponseRule]:
-        """Get all rules, optionally filtered by friend_id."""
-        if friend_id:
-            return [r for r in self.rules if r.friend_id == friend_id]
+    def get_rules(self) -> list[AutoResponseRule]:
+        """Get all rules."""
         return self.rules.copy()
     
-    def find_matching_response(self, friend_id: str, message: str) -> Optional[str]:
-        """Find a matching response for the given friend and message."""
+    def find_matching_response(self, message: str) -> Optional[str]:
+        """Find a matching response for the given message."""
         for rule in self.rules:
-            if rule.friend_id == friend_id and rule.matches(message):
+            if rule.matches(message):
                 return rule.response
         return None
     

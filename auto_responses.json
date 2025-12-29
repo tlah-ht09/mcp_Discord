@@ -1,3 +1,11 @@
 {
-  "rules": []
+  "rules": [
+    {
+      "trigger": "안녕",
+      "response": "반가워!",
+      "match_type": "contains",
+      "enabled": true,
+      "id": "example-rule-1"
+    }
+  ]
 }
