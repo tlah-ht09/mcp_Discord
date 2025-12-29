@@ -1,7 +1,7 @@
 [project]
-name = "mcp-server-template"
+name = "mcp-discord-auto-response"
 version = "0.1.0"
-description = "A template for creating Model Context Protocol (MCP) servers"
+description = "Discord Auto-Response MCP Server - Automatically respond to friend messages"
 authors = [
     { name = "Your Name", email = "your.email@example.com" }
 ]
@@ -9,6 +9,7 @@ requires-python = ">=3.10"
 dependencies = [
     "fastmcp>=2.0.0",
     "python-dotenv>=1.0.0",
+    "discord.py-self>=2.0.0",
 ]
 
 [project.scripts]
