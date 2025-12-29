@@ -9,6 +9,7 @@ from dataclasses import asdict
 from dotenv import load_dotenv
 from fastmcp import FastMCP
 import discord
+from discord import Intents
 
 from .auto_response import AutoResponseManager
 
@@ -30,7 +31,12 @@ bot_running = False
 
 def create_discord_client() -> discord.Client:
     """Create and configure the Discord client."""
-    client = discord.Client()
+    # Set up intents for receiving messages
+    intents = Intents.default()
+    intents.message_content = True
+    intents.dm_messages = True
+    
+    client = discord.Client(intents=intents)
     
     @client.event
     async def on_ready():
@@ -90,7 +96,7 @@ def start_discord_bot(token: Optional[str] = None) -> str:
     Start the Discord bot for auto-responses.
     
     Args:
-        token: Discord user token. If not provided, uses DISCORD_TOKEN from .env
+        token: Discord bot token. If not provided, uses DISCORD_TOKEN from .env
         
     Returns:
         Status message
@@ -103,7 +109,7 @@ def start_discord_bot(token: Optional[str] = None) -> str:
     # Get token from parameter or environment
     bot_token = token or os.getenv("DISCORD_TOKEN")
     
-    if not bot_token or bot_token == "your_discord_user_token_here":
+    if not bot_token or bot_token == "your_discord_bot_token_here":
         return "Error: Discord token not provided. Set DISCORD_TOKEN in .env or provide token parameter."
     
     # Start bot in a separate thread
@@ -281,35 +287,6 @@ def clear_all_rules() -> str:
     """
     count = response_manager.clear_all_rules()
     return f"Cleared {count} rule(s)."
-
-
-@mcp.tool()
-def get_friend_list() -> str:
-    """
-    Get the list of Discord friends (requires bot to be running).
-    
-    Returns:
-        List of friends with their IDs
-    """
-    if not bot_running or not discord_client:
-        return "Error: Discord bot is not running. Start it with start_discord_bot first."
-    
-    if not discord_client.user:
-        return "Error: Bot is not fully connected yet."
-    
-    try:
-        friends = discord_client.user.friends if hasattr(discord_client.user, 'friends') else []
-        
-        if not friends:
-            return "No friends found or friends list is not accessible."
-        
-        result = []
-        for friend in friends:
-            result.append(f"{friend.name}#{friend.discriminator} (ID: {friend.id})")
-        
-        return "Friends:\n" + "\n".join(result)
-    except Exception as e:
-        return f"Error getting friends list: {e}"
 
 
 def main():
